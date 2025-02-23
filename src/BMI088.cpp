@@ -612,8 +612,7 @@ int Bmi088Accel::begin()
     // setting CS pin to output
     pinMode(_csPin,OUTPUT);
     digitalWrite(_csPin,HIGH);
-    // begin SPI communication
-    _spi->begin();
+    // Don't begin SPI communication because no pin config is included
   } else {
     /* starting the I2C bus */
     _i2c->begin();
@@ -816,13 +815,13 @@ bool Bmi088Accel::setRange(Range range)
 }
 
 /* sets the Int1 pin configuration */
-bool Bmi088Accel::pinModeInt1(PinMode mode, PinLevel level)
+bool Bmi088Accel::pinModeInt1(OutputPinMode mode, PinLevel level)
 {
   return pinModeInt1(PIN_OUTPUT,mode,level);
 }
 
 /* sets the Int2 pin configuration */
-bool Bmi088Accel::pinModeInt2(PinMode mode, PinLevel level)
+bool Bmi088Accel::pinModeInt2(OutputPinMode mode, PinLevel level)
 {
   return pinModeInt2(PIN_OUTPUT,mode,level);
 }
@@ -918,7 +917,7 @@ uint64_t Bmi088Accel::getTime_ps()
 }
 
 /* sets the Int1 pin configuration */
-bool Bmi088Accel::pinModeInt1(PinIO io, PinMode mode, PinLevel level)
+bool Bmi088Accel::pinModeInt1(PinIO io, OutputPinMode mode, PinLevel level)
 {
   uint8_t writeReg = 0, readReg = 0;
   uint8_t pin_io, pin_mode, active_lvl;
@@ -938,11 +937,11 @@ bool Bmi088Accel::pinModeInt1(PinIO io, PinMode mode, PinLevel level)
     }
   }
   switch (mode) {
-    case PUSH_PULL: {
+    case OUT_PP: {
       pin_mode = ACC_INT_PUSHPULL;
       break;
     }
-    case OPEN_DRAIN: {
+    case OUT_OD:{
       pin_mode = ACC_INT_OPENDRAIN;
       break;
     }
@@ -973,7 +972,7 @@ bool Bmi088Accel::pinModeInt1(PinIO io, PinMode mode, PinLevel level)
 }
 
 /* sets the Int2 pin configuration */
-bool Bmi088Accel::pinModeInt2(PinIO io, PinMode mode, PinLevel level)
+bool Bmi088Accel::pinModeInt2(PinIO io, OutputPinMode mode, PinLevel level)
 {
   uint8_t writeReg = 0, readReg = 0;
   uint8_t pin_io, pin_mode, active_lvl;
@@ -993,11 +992,11 @@ bool Bmi088Accel::pinModeInt2(PinIO io, PinMode mode, PinLevel level)
     }
   }
   switch (mode) {
-    case PUSH_PULL: {
+    case OUT_PP: {
       pin_mode = ACC_INT_PUSHPULL;
       break;
     }
-    case OPEN_DRAIN: {
+    case OUT_OD: {
       pin_mode = ACC_INT_OPENDRAIN;
       break;
     }
@@ -1224,8 +1223,7 @@ int Bmi088Gyro::begin()
     pinMode(_csPin,OUTPUT);
     // setting CS pin high
     digitalWrite(_csPin,HIGH);
-    // begin SPI communication
-    _spi->begin();
+    // Don't begin SPI communication because no pin config is included
   } else {
     /* starting the I2C bus */
     _i2c->begin();
@@ -1303,17 +1301,17 @@ bool Bmi088Gyro::setRange(Range range)
 }
 
 /* sets the Int3 pin configuration */
-bool Bmi088Gyro::pinModeInt3(PinMode mode, PinLevel level)
+bool Bmi088Gyro::pinModeInt3(OutputPinMode mode, PinLevel level)
 {
   uint8_t writeReg = 0, readReg = 0;
   uint8_t pin_mode, active_lvl;
   readRegisters(GYRO_INT3_IO_CTRL_ADDR,1,&readReg);
   switch (mode) {
-    case PUSH_PULL: {
+    case OUT_PP: {
       pin_mode = GYRO_INT_PUSHPULL;
       break;
     }
-    case OPEN_DRAIN: {
+    case OUT_OD: {
       pin_mode = GYRO_INT_OPENDRAIN;
       break;
     }
@@ -1344,17 +1342,17 @@ bool Bmi088Gyro::pinModeInt3(PinMode mode, PinLevel level)
 }
 
 /* sets the Int4 pin configuration */
-bool Bmi088Gyro::pinModeInt4(PinMode mode, PinLevel level)
+bool Bmi088Gyro::pinModeInt4(OutputPinMode mode, PinLevel level)
 {
   uint8_t writeReg = 0, readReg = 0;
   uint8_t pin_mode, active_lvl;
   readRegisters(GYRO_INT4_IO_CTRL_ADDR,1,&readReg);
   switch (mode) {
-    case PUSH_PULL: {
+    case OUT_PP: {
       pin_mode = GYRO_INT_PUSHPULL;
       break;
     }
-    case OPEN_DRAIN: {
+    case OUT_OD: {
       pin_mode = GYRO_INT_OPENDRAIN;
       break;
     }
@@ -1566,7 +1564,7 @@ int Bmi088::begin()
     return -5000;
   }
   // set default drdy pin settings
-  if (!pinModeDrdy(PUSH_PULL,ACTIVE_HIGH)) {
+  if (!pinModeDrdy(OUT_PP,ACTIVE_HIGH)) {
     return -6000;
   } 
   return 1;
@@ -1636,7 +1634,7 @@ bool Bmi088::mapDrdy(DrdyPin pin)
 {
   switch (pin) {
     case PIN_1: {
-      if(!accel->pinModeInt2(Bmi088Accel::PIN_INPUT,Bmi088Accel::PUSH_PULL,Bmi088Accel::ACTIVE_HIGH)) {
+      if(!accel->pinModeInt2(Bmi088Accel::PIN_INPUT,Bmi088Accel::OUT_PP,Bmi088Accel::ACTIVE_HIGH)) {
         return false;
       }
       accel->writeRegister(ACC_INT1_MAP_ADDR,ACC_INTA_ENABLE);
@@ -1644,7 +1642,7 @@ bool Bmi088::mapDrdy(DrdyPin pin)
       return true;
     }
     case PIN_2: {
-      if(!accel->pinModeInt1(Bmi088Accel::PIN_INPUT,Bmi088Accel::PUSH_PULL,Bmi088Accel::ACTIVE_HIGH)) {
+      if(!accel->pinModeInt1(Bmi088Accel::PIN_INPUT,Bmi088Accel::OUT_PP,Bmi088Accel::ACTIVE_HIGH)) {
         return false;
       }
       accel->writeRegister(ACC_INT2_MAP_ADDR,ACC_INTA_ENABLE);
@@ -1652,7 +1650,7 @@ bool Bmi088::mapDrdy(DrdyPin pin)
       return true;
     }
     default: {
-      if(!accel->pinModeInt1(Bmi088Accel::PIN_INPUT,Bmi088Accel::PUSH_PULL,Bmi088Accel::ACTIVE_HIGH)) {
+      if(!accel->pinModeInt1(Bmi088Accel::PIN_INPUT,Bmi088Accel::OUT_PP,Bmi088Accel::ACTIVE_HIGH)) {
         return false;
       }
       accel->writeRegister(ACC_INT2_MAP_ADDR,ACC_INTA_ENABLE);
@@ -1662,23 +1660,23 @@ bool Bmi088::mapDrdy(DrdyPin pin)
   }
 }
 
-bool Bmi088::pinModeDrdy(PinMode mode, PinLevel level)
+bool Bmi088::pinModeDrdy(OutputPinMode mode, PinLevel level)
 {
   switch (drdy_pin) {
     case 1: {
-      if(!accel->pinModeInt1((Bmi088Accel::PinMode)mode,(Bmi088Accel::PinLevel)level)) {
+      if(!accel->pinModeInt1((Bmi088Accel::OutputPinMode)mode,(Bmi088Accel::PinLevel)level)) {
         return false;
       }  
       return true;
     }
     case 2: {
-      if(!accel->pinModeInt2((Bmi088Accel::PinMode)mode,(Bmi088Accel::PinLevel)level)) {
+      if(!accel->pinModeInt2((Bmi088Accel::OutputPinMode)mode,(Bmi088Accel::PinLevel)level)) {
         return false;
       }  
       return true;
     }
     default: {
-      if(!accel->pinModeInt2((Bmi088Accel::PinMode)mode,(Bmi088Accel::PinLevel)level)) {
+      if(!accel->pinModeInt2((Bmi088Accel::OutputPinMode)mode,(Bmi088Accel::PinLevel)level)) {
         return false;
       }  
       return true;
@@ -1690,7 +1688,7 @@ bool Bmi088::mapSync(SyncPin pin)
 {
   switch (pin) {
     case PIN_3: {
-      if (!gyro->pinModeInt3(Bmi088Gyro::PUSH_PULL,Bmi088Gyro::ACTIVE_HIGH)) {
+      if (!gyro->pinModeInt3(Bmi088Gyro::OUT_PP,Bmi088Gyro::ACTIVE_HIGH)) {
         return false;
       }
       if (!gyro->mapDrdyInt3(true)) {
@@ -1699,7 +1697,7 @@ bool Bmi088::mapSync(SyncPin pin)
       return true;
     }
     case PIN_4: {
-      if (!gyro->pinModeInt4(Bmi088Gyro::PUSH_PULL,Bmi088Gyro::ACTIVE_HIGH)) {
+      if (!gyro->pinModeInt4(Bmi088Gyro::OUT_PP,Bmi088Gyro::ACTIVE_HIGH)) {
         return false;
       }
       if (!gyro->mapDrdyInt4(true)) {
@@ -1708,7 +1706,7 @@ bool Bmi088::mapSync(SyncPin pin)
       return true;
     }
     default: {
-      if (!gyro->pinModeInt3(Bmi088Gyro::PUSH_PULL,Bmi088Gyro::ACTIVE_HIGH)) {
+      if (!gyro->pinModeInt3(Bmi088Gyro::OUT_PP,Bmi088Gyro::ACTIVE_HIGH)) {
         return false;
       }
       if (!gyro->mapDrdyInt3(true)) {

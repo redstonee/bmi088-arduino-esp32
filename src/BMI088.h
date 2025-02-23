@@ -62,9 +62,9 @@ class Bmi088Accel {
       ODR_12_5HZ_BW_2HZ,
       ODR_12_5HZ_BW_1HZ
     };
-    enum PinMode {
-      PUSH_PULL,
-      OPEN_DRAIN
+    enum OutputPinMode {
+      OUT_PP,
+      OUT_OD
     };
     enum PinLevel {
       ACTIVE_HIGH,
@@ -75,8 +75,8 @@ class Bmi088Accel {
     int begin();
     bool setOdr(Odr odr);
     bool setRange(Range range);
-    bool pinModeInt1(PinMode mode, PinLevel level);
-    bool pinModeInt2(PinMode mode, PinLevel level);
+    bool pinModeInt1(OutputPinMode mode, PinLevel level);
+    bool pinModeInt2(OutputPinMode mode, PinLevel level);
     bool mapDrdyInt1(bool enable);
     bool mapDrdyInt2(bool enable);
     bool getDrdyStatus();
@@ -184,8 +184,8 @@ class Bmi088Accel {
     uint32_t current_time_counter, prev_time_counter = 0;
     uint64_t time_counter;
     // interrupt pin setup
-    bool pinModeInt1(PinIO io, PinMode mode, PinLevel level);
-    bool pinModeInt2(PinIO io, PinMode mode, PinLevel level);
+    bool pinModeInt1(PinIO io, OutputPinMode mode, PinLevel level);
+    bool pinModeInt2(PinIO io, OutputPinMode mode, PinLevel level);
     // self test
     bool selfTest();
     // power and mode settings
@@ -223,9 +223,9 @@ class Bmi088Gyro {
       ODR_200HZ_BW_64HZ = 0x86,
       ODR_100HZ_BW_32HZ = 0x87
     };
-    enum PinMode {
-      PUSH_PULL,
-      OPEN_DRAIN
+    enum OutputPinMode {
+      OUT_PP,
+      OUT_OD
     };
     enum PinLevel {
       ACTIVE_HIGH,
@@ -236,8 +236,8 @@ class Bmi088Gyro {
     int begin();
     bool setOdr(Odr odr);
     bool setRange(Range range);
-    bool pinModeInt3(PinMode mode, PinLevel level);
-    bool pinModeInt4(PinMode mode, PinLevel level);
+    bool pinModeInt3(OutputPinMode mode, PinLevel level);
+    bool pinModeInt4(OutputPinMode mode, PinLevel level);
     bool mapDrdyInt3(bool enable);
     bool mapDrdyInt4(bool enable);
     bool getDrdyStatus();
@@ -358,9 +358,9 @@ class Bmi088 {
       PIN_3,
       PIN_4
     };
-    enum PinMode {
-      PUSH_PULL,
-      OPEN_DRAIN
+    enum OutputPinMode {
+      OUT_PP,
+      OUT_OD
     };
     enum PinLevel {
       ACTIVE_HIGH,
@@ -373,7 +373,7 @@ class Bmi088 {
     bool setRange(AccelRange accel_range,GyroRange gyro_range);
     bool mapDrdy(DrdyPin pin);
     bool mapSync(SyncPin pin);    
-    bool pinModeDrdy(PinMode mode, PinLevel level);
+    bool pinModeDrdy(OutputPinMode mode, PinLevel level);
     void readSensor();
     float getAccelX_mss();
     float getAccelY_mss();
